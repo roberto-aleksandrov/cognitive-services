@@ -16,7 +16,6 @@ const getFormData = (data) => {
 
 const api = config => ({
   exec: ({ method, data, url }) => {
-    console.log(data);
     const formData = getFormData(data);
 
     return axios({

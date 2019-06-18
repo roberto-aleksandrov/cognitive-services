@@ -1,4 +1,5 @@
 ﻿using CognitiveServices.Application.Common.Constants.Validators;
+using CognitiveServices.Application.Common.Dtos;
 using CognitiveServices.Application.Common.Interfaces.Data;
 using CognitiveServices.Application.Common.Interfaces.Services;
 using CognitiveServices.Application.Common.Validators;
@@ -8,13 +9,14 @@ namespace CognitiveServices.Application.Common.Extensions
 {
     public static class FluentValidationExtensions
     {
-        public static IRuleBuilderOptions<TModel, TModel> CategoriesAreValid<TModel>(
-            this IRuleBuilder<TModel, TModel> ruleBuilder,
+        public static IRuleBuilderOptions<TModel, TProperty> CategoriesAreValid<TModel, TProperty>(
+            this IRuleBuilder<TModel, TProperty> ruleBuilder,
             ICognitiveServicesDbContext cognitiveServicesDbContext,
             IImageRecognitionClient imageRecognitionClient,
-            string errorMessage = ErrorMessages.InvalidProperty)
+            string errorMessage = ErrorMessages.InvalidCategories)
+            where TModel : UpsertImageDto
         {
-            return ruleBuilder.SetValidator(new CategoriesValidator(cognitiveServicesDbContext, imageRecognitionClient, errorMessage));
+            return ruleBuilder.SetValidator(new CategoriesValidator<TModel>(cognitiveServicesDbContext, imageRecognitionClient, errorMessage));
         }
     }
 }

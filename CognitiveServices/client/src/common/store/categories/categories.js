@@ -6,15 +6,19 @@ const actions = {
     console.log('========== ERR ==========');
   },
   [GET_CATEGORIES.FULFILLED](context, data) {
+    console.log(data);
     context.commit('saveCategories', data);
   },
   [GET_CATEGORIES.DEFAULT](context, data) {
+    const { fulfill, reject } = getCategoriesActions(context);
+
     createApiRequest(context)({
       data,
       api: 'ajaxApi',
       url: 'categories/getall',
       method: 'get',
-      actions: getCategoriesActions,
+      onSuccess: [fulfill],
+      onFailure: [reject],
     });
   },
 };

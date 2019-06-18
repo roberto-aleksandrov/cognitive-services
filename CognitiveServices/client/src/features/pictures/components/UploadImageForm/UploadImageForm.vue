@@ -11,7 +11,7 @@
             <v-select 
                 item-value='id'
                 item-text='name'
-                @change='selectChange' 
+                v-model='picture.categoryIds'
                 :items="categories"
                 multiple label="Categories"
                 prepend-icon='description'
@@ -82,24 +82,34 @@ export default {
         url: undefined
     }),
     methods: {
-        selectChange(e) {
-            this.picture.categoryIds = e;            
-        },
         uploadFile(e) {
+            const reader = new FileReader();
+
             this.picture.file = e.target.files[0];
-            this.url = URL.createObjectURL(this.picture.file);
+
+            reader.onload = e => {
+                this.url = e.target.result;
+            }
+            
+            reader.readAsDataURL(e.target.files[0]);
+            
+            // this.picture.file = e.target.files[0];
+            // this.url = URL.createObjectURL(this.picture.file);
         },
         submit() {
-            console.log('here');
             this.$emit('submit', this.picture);
         },
          ...mapActions([
             GET_CATEGORIES.DEFAULT
         ])
     },
-    created() {
-        if(!this.populateWith.empty) {
-            this.picture = this.populateWith;
+    watch: {
+        populateWith: function(val) {
+            if(!this.populateWith.empty) {
+                this.picture = { ...val };
+                this.picture.categoryIds = val.imageCategories.map(n => n.categoryId);
+                this.url = `data:image/png;base64, ${val.content}`;
+            }    
         }
     },
     mounted() {

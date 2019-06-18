@@ -19,10 +19,16 @@ namespace CognitiveServices.Infrastructure.Validation
         {
             var validator = _validatorFactory.GetValidator<T>();
 
+            await InvokePhases(validator, model, "Phase 1");
+            await InvokePhases(validator, model, "Phase 2");
+        }
+
+        private async Task InvokePhases<T>(IValidator<T> validator, T model, string phases)
+        {
             var failures = (await validator
-                    .ValidateAsync(model))
-                    .Errors
-                    .ToList();
+                       .ValidateAsync(model, ruleSet: phases))
+                       .Errors
+                       .ToList();
 
             if (failures.Count != 0)
             {

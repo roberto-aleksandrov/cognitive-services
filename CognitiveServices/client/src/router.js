@@ -2,6 +2,8 @@ import Vue from 'vue';
 import Router from 'vue-router';
 import Home from './features/Home.vue';
 import CreatePicturePage from './features/pictures/create-picture-page';
+import PicturesPage from './features/pictures/pictures-page';
+import UpdatePicturePage from './features/pictures/update-picture-page';
 
 Vue.use(Router);
 
@@ -16,6 +18,16 @@ export default new Router({
       path: '/pictures/create',
       name: 'createPicturePage',
       component: CreatePicturePage,
+    },
+    {
+      path: '/pictures',
+      name: 'picturesPage',
+      component: PicturesPage,
+    },
+    {
+      path: '/pictures/update/:id',
+      name: 'picturesPage',
+      component: UpdatePicturePage,
     },
     {
       path: '/about',

@@ -14,5 +14,7 @@ namespace CognitiveServices.Application.Common.Interfaces.Data
         DbSet<ImageCategoryEntity> ImageCategories { get; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken));
+
+        DbSet<T> Set<T>() where T : class;
     }
 }

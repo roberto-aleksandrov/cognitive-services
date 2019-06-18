@@ -12,14 +12,21 @@ namespace CognitiveServices.Application.Validators
         {
             CascadeMode = CascadeMode.StopOnFirstFailure;
 
-            RuleFor(n => n.Content)
-                .NotEmpty();
+            RuleSet("Phase 1", () =>
+            {
+                RuleFor(n => n.CategoryIds)
+                    .NotEmpty();
 
-            RuleFor(n => n.CategoryIds)
-                .NotEmpty();
+                RuleFor(n => n.Content)
+                    .NotEmpty();
+            });
 
-            RuleFor(n => n)
-                .CategoriesAreValid(context, imageRecognitionClient);
+            RuleSet("Phase 2", () =>
+            {
+                RuleFor(n => n)
+                    .CategoriesAreValid(context, imageRecognitionClient);
+
+            });
         }
     }
 }

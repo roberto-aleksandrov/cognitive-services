@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
@@ -7,24 +8,26 @@ using CognitiveServices.Application.Common.Dtos;
 using CognitiveServices.Application.Common.Interfaces.Data;
 using CognitiveServices.Application.Common.Interfaces.Services;
 using CognitiveServices.Application.Common.Models.Contracts.ImageRecognition;
+using CognitiveServices.Application.Common.Models.Dtos;
 using CognitiveServices.Application.Common.Models.Enums;
 using CognitiveServices.Domain.Entities;
 using FluentValidation.Validators;
 
 namespace CognitiveServices.Application.Common.Validators
 {
-    public class CategoriesValidator : BaseValidator
+    public class CategoriesValidator<T> : BaseValidator
+        where T : UpsertImageDto
     {
-        private readonly ICognitiveServicesDbContext _cognitiveServicesDbContext;
+        private readonly ICognitiveServicesDbContext _context;
         private readonly IImageRecognitionClient _imageRecognitionClient;
 
         public CategoriesValidator(
-            ICognitiveServicesDbContext cognitiveServicesDbContext,
+            ICognitiveServicesDbContext context,
             IImageRecognitionClient imageRecognitionClient,
             string errorMessage)
             : base(errorMessage)
         {
-            _cognitiveServicesDbContext = cognitiveServicesDbContext;
+            _context = context;
             _imageRecognitionClient = imageRecognitionClient;
         }
 
@@ -35,17 +38,32 @@ namespace CognitiveServices.Application.Common.Validators
 
         protected override async Task<bool> IsValidAsync(PropertyValidatorContext context, CancellationToken cancellation)
         {
-            var imageDto = (UpsertImageDto)context.PropertyValue;
+            var imageDto = (T)context.Instance;
+            var content = await GetContent(imageDto);
 
-            var categoryEntities = _cognitiveServicesDbContext.Categories.Where(n => imageDto.CategoryIds.Contains(n.Id)).ToList();
+            var categoryEntities = _context.Categories.Where(n => imageDto.CategoryIds.Contains(n.Id)).ToList();
 
             var response = await _imageRecognitionClient.SendAsync(new ImageRecognitionRequest
             {
-                Image = imageDto.Content,
+                Image = content,
                 VisualFeatures = new List<VisualFeatures> { VisualFeatures.Objects }
             });
             
             return categoryEntities.All(n => response.Objects.Any(m => ValidateCategory(n, m)));
+        }
+
+        private async Task<byte[]> GetContent(T imageDto)
+        {
+            if(imageDto.Content != null)
+            {
+                return imageDto.Content;
+            }
+
+            var updateImageDto = imageDto as UpdateImageDto ?? throw new ArgumentException("Invalid validation object!");
+
+            var imageEntity = await _context.Images.FindAsync(updateImageDto.Id);
+
+            return imageEntity.Content;
         }
 
         private bool ValidateCategory(CategoryEntity category, ObjectResponse obj)

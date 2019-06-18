@@ -1,4 +1,4 @@
-
+import { juxt } from 'ramda';
 
 export const API_REQUEST = 'API_REQUEST';
 
@@ -8,11 +8,11 @@ export const createApiRequest = ({ dispatch }) => (payload) => {
 
 const actions = ({ apiService }) => ({
   [API_REQUEST]: (context, payload) => {
-    const { fulfill, reject } = payload.actions(context);
+    const { onSuccess, onFailure } = payload;
 
     apiService[payload.api].exec(payload)
-      .then(fulfill)
-      .catch(reject);
+      .then(juxt(onSuccess))
+      .catch(err => juxt(onFailure)(err.response));
   },
 });
 

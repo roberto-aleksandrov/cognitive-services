@@ -5,6 +5,7 @@ using CognitiveServices.Application.Common.Dtos;
 using CognitiveServices.Application.Common.Interfaces.Data;
 using CognitiveServices.Application.Common.Interfaces.Services;
 using CognitiveServices.Application.Common.Interfaces.Validation;
+using CognitiveServices.Application.Common.Models.Dtos;
 using CognitiveServices.Application.Services;
 using CognitiveServices.Application.Services.Interfaces;
 using CognitiveServices.Application.Validators;
@@ -60,6 +61,8 @@ namespace CognitiveServices
             services.AddTransient<ICategoriesService, CategoriesService>();
             services.AddTransient<IImageRecognitionClient, ImageRecognitionClient>();
             services.AddTransient<IValidator<UpsertImageDto>, ImageValidator>();
+            services.AddTransient<IValidator<UpdateImageDto>, UpdateImageValidator>();
+            services.AddTransient<IValidator<DeleteImageDto>, DeleteImageValidator>();
             services.AddTransient<IValidationService, ValidationService>();
             services.AddTransient<IValidatorFactory>(o => new ValidatorFactory(services.BuildServiceProvider()));
 

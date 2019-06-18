@@ -12,8 +12,9 @@
 
         public const string InvalidInclude = "Invalid include clause.";
 
-        public const string Invalid = "Invalid";
+        public const string Invalid = "Invalid!";
 
-        public const string InvalidProperty = "{PropertyName} is Invalid!";
+        public const string InvalidCategories = "You've selected invalid categories.";
+        
     }
 }
