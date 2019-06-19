@@ -6,7 +6,7 @@ export const NOTIFY_SUCCESS = 'NOTIFY_SUCCESS';
 
 export const notifyActions = ({ dispatch }) => ({
   error: payload => dispatch(NOTIFY_ERROR, payload, { root: true }),
-  success: payload => console.log(payload) || dispatch(NOTIFY_SUCCESS, payload, { root: true }),
+  success: payload => dispatch(NOTIFY_SUCCESS, payload, { root: true }),
 });
 
 const OPTIONS = {

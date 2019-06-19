@@ -15,6 +15,10 @@ namespace CognitiveServices.Domain.Entities
 
         public string SingularName { get; set; }
 
-        public virtual ICollection<ImageCategoryEntity> ImageCategories { get; set; }
+        public int? ParentId { get; set; }
+
+        public CategoryEntity Parent { get; set; }
+
+        public virtual ICollection<ImageCategoryEntity> ImageCategories { get; set; }        
     }
 }

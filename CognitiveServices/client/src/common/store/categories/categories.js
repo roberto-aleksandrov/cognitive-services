@@ -1,24 +1,45 @@
-import { GET_CATEGORIES, getCategoriesActions } from './actions';
+import {
+  GET_CATEGORIES,
+  GET_SUBCATEGORIES,
+  categoriesMutations,
+} from './actions';
 import { createApiRequest } from '../apiRequest';
+import { notifyActions } from '../notifications';
+import createWhereClause from './createWhereClause';
 
 const actions = {
   [GET_CATEGORIES.REJECTED]() {
     console.log('========== ERR ==========');
   },
-  [GET_CATEGORIES.FULFILLED](context, data) {
-    console.log(data);
-    context.commit('saveCategories', data);
-  },
-  [GET_CATEGORIES.DEFAULT](context, data) {
-    const { fulfill, reject } = getCategoriesActions(context);
+  [GET_CATEGORIES.DEFAULT](context) {
+    const { saveCategories } = categoriesMutations(context);
+    const { error } = notifyActions(context);
 
     createApiRequest(context)({
-      data,
+      data: { where: 'ParentId = null' },
       api: 'ajaxApi',
       url: 'categories/getall',
       method: 'get',
-      onSuccess: [fulfill],
-      onFailure: [reject],
+      onSuccess: [saveCategories],
+      onFailure: [error],
+    });
+  },
+  [GET_SUBCATEGORIES.DEFAULT](context, { ids }) {
+    const { saveSubcategories } = categoriesMutations(context);
+    const { error } = notifyActions(context);
+
+    if (ids.length === 0) {
+      saveSubcategories({});
+      return;
+    }
+
+    createApiRequest(context)({
+      data: { where: createWhereClause(ids), include: 'Parent' },
+      api: 'ajaxApi',
+      url: 'categories/getall',
+      method: 'get',
+      onSuccess: [saveSubcategories],
+      onFailure: [error],
     });
   },
 };
@@ -27,10 +48,14 @@ const mutations = {
   saveCategories(state, payload) {
     state.categories = payload.data;
   },
+  saveSubcategories(state, payload) {
+    state.subCategories = payload.data || [];
+  },
 };
 
 const state = {
   categories: [],
+  subCategories: [],
 };
 
 export default {

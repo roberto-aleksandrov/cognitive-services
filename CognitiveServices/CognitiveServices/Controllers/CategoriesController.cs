@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using CognitiveServices.Application.Common.Dtos;
+using CognitiveServices.Application.Common.Models.Dtos;
 using CognitiveServices.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,9 +17,9 @@ namespace CognitiveServices.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CategoryDto>>> GetAll()
+        public async Task<ActionResult<IEnumerable<CategoryDto>>> GetAll([FromQuery] QueryDto queryDto)
         {
-            var response = await _categoriesService.GetAllAsync();
+            var response = await _categoriesService.GetAllAsync(queryDto);
 
             return Ok(response);
         }

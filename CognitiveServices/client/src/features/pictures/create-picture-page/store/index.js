@@ -8,7 +8,7 @@ const actions = {
     console.log('========== err =========');
   },
   [CREATE_PICTURE.FULFILLED]: () => {
-    router.push('/pictures');
+    router.push('/');
   },
   [CREATE_PICTURE.DEFAULT]: (context, { file, ...rest }) => {
     const { fulfill } = createPictureActions(context);

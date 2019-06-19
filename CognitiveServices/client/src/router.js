@@ -10,17 +10,12 @@ Vue.use(Router);
 export default new Router({
   routes: [
     {
-      path: '/',
-      name: 'home',
-      component: Home,
-    },
-    {
       path: '/pictures/create',
       name: 'createPicturePage',
       component: CreatePicturePage,
     },
     {
-      path: '/pictures',
+      path: '/',
       name: 'picturesPage',
       component: PicturesPage,
     },

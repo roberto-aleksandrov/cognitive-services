@@ -1,3 +1,5 @@
+import { compose } from 'ramda';
+
 import {
   GET_PICTURES,
   GET_PICTURE,
@@ -8,6 +10,7 @@ import {
 } from './actions';
 import { createApiRequest } from '../apiRequest';
 import { notifyActions } from '../notifications';
+import { assignImagesCategoryIds, assignCategoryIds, transformData } from './utilities';
 
 const actions = {
   [GET_PICTURES.DEFAULT]: (context) => {
@@ -17,7 +20,8 @@ const actions = {
       api: 'ajaxApi',
       url: 'images/getall',
       method: 'get',
-      onSuccess: [saveAll],
+      onSuccess: [compose(saveAll, transformData(assignImagesCategoryIds))],
+      data: { include: 'ImageCategories.Category' },
     });
   },
   [GET_PICTURE.DEFAULT]: (context, payload) => {
@@ -28,7 +32,7 @@ const actions = {
       api: 'ajaxApi',
       url: `images/get/${payload.id}`,
       method: 'get',
-      onSuccess: [save],
+      onSuccess: [compose(save, transformData(assignCategoryIds))],
       onFailure: [reject],
     });
   },

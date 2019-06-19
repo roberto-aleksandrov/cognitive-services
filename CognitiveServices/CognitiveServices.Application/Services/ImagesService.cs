@@ -32,7 +32,10 @@ namespace CognitiveServices.Application.Services
 
         public async Task<ImageDto> GetByIdAsync(int id)
         {
-            var imageEntity = await _context.Images.Include(n => n.ImageCategories).FirstAsync(n => n.Id == id);
+            var imageEntity = await _context.Images
+                    .Include(n => n.ImageCategories)
+                    .ThenInclude(n => n.Category)
+                    .FirstAsync(n => n.Id == id);
 
             return _mapper.Map<ImageDto>(imageEntity);
         }

@@ -1,5 +1,5 @@
 <template>
-    <Form> 
+    <FormCard> 
         <h2 slot='header' class='green--text text--darken-1'>Upload Image</h2>
         <v-form class='px-3' slot='content'>
             <v-text-field 
@@ -14,6 +14,14 @@
                 v-model='picture.categoryIds'
                 :items="categories"
                 multiple label="Categories"
+                prepend-icon='description'
+            />
+            <v-select 
+                item-value='id'
+                item-text='name'
+                v-model='picture.subCategoryIds'
+                :items="subCategories"
+                multiple label="Subcategories"
                 prepend-icon='description'
             />
             <v-textarea 
@@ -48,23 +56,23 @@
                 </v-btn>
             </v-card-actions>
         </v-form>
-    </Form>
+    </FormCard>
 </template>
 
 <script>
 import { createNamespacedHelpers } from 'vuex';  
 
-import Form from '../../../../common/components/form';
-import { GET_CATEGORIES } from '../../../../common/store/categories/actions';
+import FormCard from '../../../../common/components/form';
+import { GET_CATEGORIES, GET_SUBCATEGORIES, getSubcategoriesActions } from '../../../../common/store/categories/actions';
 const { mapActions, mapState } = createNamespacedHelpers('category');
 
 export default {
     name: 'uploadImageForm',    
     components: {
-        Form
+        FormCard
     },
     computed: {
-        ...mapState(['categories']),
+        ...mapState(['categories', 'subCategories']),
     },
     props: {
         populateWith: {
@@ -77,7 +85,8 @@ export default {
             name: '',
             description: '',
             file: undefined,
-            categoryIds: []
+            categoryIds: [],
+            subCategoryIds: []
         },
         url: undefined
     }),
@@ -97,7 +106,13 @@ export default {
             // this.url = URL.createObjectURL(this.picture.file);
         },
         submit() {
-            this.$emit('submit', this.picture);
+            const { subCategoryIds, ...rest} = this.picture;
+            const picture = {
+                ...rest,
+                categoryIds: [...rest.categoryIds, ...subCategoryIds]
+            }
+
+            this.$emit('submit', picture);
         },
          ...mapActions([
             GET_CATEGORIES.DEFAULT
@@ -107,9 +122,16 @@ export default {
         populateWith: function(val) {
             if(!this.populateWith.empty) {
                 this.picture = { ...val };
-                this.picture.categoryIds = val.imageCategories.map(n => n.categoryId);
+
                 this.url = `data:image/png;base64, ${val.content}`;
             }    
+        },
+        ['picture.categoryIds']: {
+            handler: function(ids) {  
+                this.$store.dispatch(`category/${GET_SUBCATEGORIES.DEFAULT}`, { ids }, { root: true });
+            },
+            deep: true,
+            immediate: false,
         }
     },
     mounted() {
@@ -119,5 +141,7 @@ export default {
 </script>
 
 <style>
-
+    .upload-image-form {
+        margin-top: 15%
+    }
 </style>

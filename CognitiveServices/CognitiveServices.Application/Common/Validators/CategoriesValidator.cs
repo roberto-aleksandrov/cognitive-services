@@ -73,7 +73,7 @@ namespace CognitiveServices.Application.Common.Validators
                 return false;
             }
 
-            return category.SingularName != obj.Object 
+            return category.SingularName.ToLower() != obj.Object.ToLower() 
                 ? ValidateCategory(category, obj.Parent) 
                 : true;
         }

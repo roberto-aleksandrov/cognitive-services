@@ -8,7 +8,7 @@ const actions = {
     console.log(payload);
   },
   [UPDATE_PICTURE.FULFILLED]: () => {
-    router.push('/pictures');
+    router.push('/');
   },
   [UPDATE_PICTURE.DEFAULT]: (context, {
     file, id, content, ...rest

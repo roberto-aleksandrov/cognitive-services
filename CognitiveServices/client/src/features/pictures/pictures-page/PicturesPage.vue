@@ -1,6 +1,6 @@
 <template>
-    <v-container class='mt-5'>
-        <v-layout class='mt-5' row wrap>
+    <v-container>
+        <v-layout row wrap>
             <v-flex v-for='picture in pictures' v-bind:key='picture.id' class='mt-5' xs10 md3 offset-sm1>
                 <v-card>
                     <v-img 
